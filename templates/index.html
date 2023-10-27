@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Counter</title>
+    <style>
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        select, p {
+            margin: 0;
+        }
+        textarea {
+            width: 95%; /* make it close to the browser's width */
+            resize: vertical; /* allow only vertical resizing */
+            margin-top: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="text" rows="10"></textarea>
+    
+    <div class="row">
+        <select id="tokenizer">
+            <option value="whitespace" selected>Whitespace Tokenizer</option>
+            <option value="xlm-roberta-large">XLM-Roberta Large Tokenizer</option>
+            <option value="bert-large-uncased">Bert Large Uncased Tokenizer</option>
+        </select>
+        <p>Token Count: <span id="count">0</span></p>
+    </div>
+
+    <script>
+        function updateCount() {
+            fetch('/count', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: document.getElementById('text').value,
+                    tokenizer_name: document.getElementById('tokenizer').value
+                })
+            }).then(response => response.json()).then(data => {
+                document.getElementById('count').innerText = data.count;
+            });
+        }
+
+        document.getElementById('text').addEventListener('input', updateCount);
+        document.getElementById('tokenizer').addEventListener('change', updateCount);
+    </script>
+</body>
+</html>
